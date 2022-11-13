@@ -373,9 +373,11 @@
   <ItemGroup>
     <None Include="Resources\icons8-поиск-48.png" />
     <None Include="Resources\icons8-поиск.gif" />
+    <None Include="Resources\icons8-добавить-правило-48.png" />
+    <None Include="Resources\icons8-настройки.gif" />
+    <None Include="Resources\free-icon-folder-4080912.png" />
     <Content Include="Resources\up.png" />
     <None Include="Resources\up1.png" />
-    <Content Include="up.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\Microsoft.Data.SqlClient.SNI.1.1.0\build\net46\Microsoft.Data.SqlClient.SNI.targets" Condition="Exists('..\packages\Microsoft.Data.SqlClient.SNI.1.1.0\build\net46\Microsoft.Data.SqlClient.SNI.targets')" />

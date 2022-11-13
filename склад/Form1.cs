@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -21,6 +22,7 @@ namespace склад
             BSourse = new BindingSource();
             dataGridView1.DataSource = ReadDb();
             repit();
+            SchComboBox.SelectedIndex = 0;
         }
         private void CreateDb(addform infoform)
         {
@@ -86,6 +88,49 @@ namespace склад
                 CreateDb(infoForm);
                 dataGridView1.DataSource = ReadDb();
                 repit();
+            }
+        }
+        private void dataGridView1_CellPainting(object sender, DataGridViewCellPaintingEventArgs e)
+        {
+            if (e.ColumnIndex >= 0 && e.RowIndex >= 0 && dataGridView1.Columns[e.ColumnIndex].Name == "AgeColumn")
+            { 
+                e.PaintBackground(e.CellBounds, true);
+                var val = decimal.Parse(e.Value.ToString());
+                var width = (float)(val*e.CellBounds.Width / 100.0m);
+                var rect = new Rectangle(e.CellBounds.X,
+                        e.CellBounds.Y,
+                        (int)(width + 1),
+                        e.CellBounds.Height);
+                LinearGradientBrush GradBrash = new LinearGradientBrush(rect,Color.OrangeRed,Color.GreenYellow,0f);
+                if (val >50 )
+                {
+                    e.Graphics.FillRectangle(GradBrash, e.CellBounds.X,
+                        e.CellBounds.Y,
+                        width,
+                        e.CellBounds.Height);
+                    e.Graphics.DrawString(val.ToString(), new Font("Arial", 10, FontStyle.Regular),new SolidBrush(Color.Black), e.CellBounds.X+45,
+                        e.CellBounds.Y+5 );
+                }
+                else if (val < 50&&val>10)
+                {
+                    e.Graphics.FillRectangle(GradBrash, e.CellBounds.X,
+                       e.CellBounds.Y,
+                       width,
+                       e.CellBounds.Height);
+                    e.Graphics.DrawString(val.ToString(), new Font("Arial", 10, FontStyle.Regular), new SolidBrush(Color.Black), e.CellBounds.X + 45,
+                       e.CellBounds.Y + 5);
+
+                }
+                else if( val < 10)
+                {
+                    e.Graphics.FillRectangle(GradBrash, e.CellBounds.X,
+                       e.CellBounds.Y,
+                       width,
+                       e.CellBounds.Height);
+                    e.Graphics.DrawString(val.ToString(), new Font("Arial", 10, FontStyle.Regular), new SolidBrush(Color.Black), e.CellBounds.X + 45,
+                       e.CellBounds.Y + 5);
+                }
+                e.Handled = true;
             }
         }
         private void toolStripButton3_Click(object sender, EventArgs e)
@@ -167,27 +212,11 @@ namespace склад
 
         private void forprogramToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            MessageBox.Show("Склад гвоздей", "Бажин Кирилл Адреевич", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            MessageBox.Show("Склад", "Бажин Кирилл Адреевич", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
         private void выходToolStripMenuItem_Click(object sender, EventArgs e)
         {
             this.Close();
-        }
-
-        private void dataGridView2_CellContentClick(object sender, DataGridViewCellEventArgs e)
-        {
-
-        }
-
-        private void Search_Click(object sender, EventArgs e)
-        {
-           
-        }
-
-        private void ButtonSearch_Click(object sender, EventArgs e)
-        {
-            scladDBBindingSource.Filter = string.Format("{0}='{1}'", SchComboBox.Text, Search.Text); ;
-            
         }
 
         private void SchComboBox_SelectedIndexChanged(object sender, EventArgs e)
@@ -204,10 +233,41 @@ namespace склад
         {
             this.scladDBTableAdapter.Fill(this.scladDBDataSet.ScladDB);
         }
+        private void Search_TextChanged(object sender, EventArgs e)
+        { 
+            try
+            {
+                scladDBBindingSource.Filter = string.Format($"{SchComboBox.Text}='{Search.Text.Trim()}'");
+            }
+            catch (SyntaxErrorException)
+            {
+                // recover from exception
+            }
+            if (string.IsNullOrWhiteSpace(Search.Text))
+            {
+                this.scladDBTableAdapter.Fill(this.scladDBDataSet.ScladDB);
+            }
+        }
 
-        private void SchComboBox_Click(object sender, EventArgs e)
+        private void Search_Click(object sender, EventArgs e)
         {
 
+        }
+
+        private void ButtonSearch_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                scladDBBindingSource.Filter = string.Format("{0}='{1}'", SchComboBox.Text, Search.Text);
+            }
+            catch (SyntaxErrorException)
+            {
+                // recover from exception
+            }
+            if (string.IsNullOrWhiteSpace(Search.Text))
+            {
+                dataGridView2.DataSource= scladDBDataSet.ScladDB.ToList();
+            }
         }
     }
 }
